@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="tr-TR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Öğretmenlerden öğrencilerine "Atatürk'le fotoğraf" sürprizi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;550;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #fefefe;
+            --text: #111827;
+            --muted: #6b7280;
+            --brand-red: #E30A17; /* Cumhuriyet Bayramı Kırmızısı */
+            --brand-light-red: #fbebee; /* Vurgu için açık kırmızı */
+            --carousel-radius: 12px;
+        }
+        * { box-sizing: border-box; }
+        
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Roboto', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            font-size: 1.05rem; 
+            line-height: 1.75; 
+            overflow-x: hidden; 
+        }
+        
+        .progress-bar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 4px; 
+            width: 0; 
+            background: linear-gradient(to right, var(--brand-red), #ffffff); 
+            border-radius: 2px; 
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); 
+            z-index: 1001; 
+            transition: width 0.25s ease-out; 
+        }
+
+        .container { max-width: 720px; margin: 20px auto; padding: 24px 24px 32px; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07); position: relative; }
+        h1 { font-size: 2.5rem; font-family: 'Playfair Display', serif; color: var(--text); text-align: center; margin-bottom: 30px; line-height: 1.3; position: relative; }
+        h1::after { content: ''; display: block; width: 80px; height: 4px; background: var(--brand-red); margin: 15px auto 0 auto; border-radius: 2px; }
+        h2 { font-size: 1.65rem; margin-top: 48px; font-family: 'Playfair Display', serif; color: var(--text); text-align: left; }
+        p { margin-bottom: 20px; color: var(--muted); font-family: 'Inter', sans-serif; text-align: left; }
+        p strong { color: #333; font-weight: 600; }
+        .highlighted-text { background-color: var(--brand-light-red); color: var(--brand-red); padding: 3px 6px; border-radius: 4px; font-weight: 600; }
+        
+        /* Carousel için temel stiller */
+        .carousel-container { 
+            position: relative; 
+            max-width: 100%; 
+            margin: 40px auto 20px; 
+            overflow: hidden; 
+            transition: height 0.35s ease-in-out; 
+        }
+        .carousel-inner { display: flex; transition: transform 0.5s ease-in-out; align-items: flex-start; }
+        .carousel-item { 
+            min-width: 100%; 
+            box-sizing: border-box; 
+            text-align: center; 
+            padding: 0 10px;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        
+        .carousel-item blockquote.instagram-media { margin: 0 auto !important; max-width: 100%; }
+        .carousel-item .prompt-text { font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--muted); line-height: 1.5; padding: 8px 10px; margin-top: 15px; }
+        .carousel-item .prompt-text strong { color: var(--text); font-weight: 600; }
+        
+        /* Instagram kullanıcı adı linki */
+        .prompt-text .insta-user {
+            color: var(--text); 
+            font-weight: 600; 
+            text-decoration: none; 
+            transition: color 0.2s ease, text-decoration 0.2s ease;
+        }
+        .prompt-text .insta-user:hover {
+            color: var(--brand-red); 
+            text-decoration: underline; 
+        }
+
+        /* Metin içi link stili */
+        p .text-link {
+            color: inherit; 
+            font-weight: inherit; 
+            text-decoration: underline; 
+            text-decoration-color: var(--muted); 
+            text-decoration-thickness: 1px; 
+            transition: color 0.2s ease, text-decoration-color 0.2s ease;
+        }
+        p .text-link:hover {
+            color: var(--brand-red); 
+            text-decoration-color: var(--brand-red); 
+        }
+
+        /* Düzeltilmiş Buton Stilleri */
+        .carousel-nav { 
+            position: absolute; 
+            top: 40%; 
+            transform: translateY(-50%); 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-between; 
+            z-index: 100; 
+            pointer-events: none; 
+            padding: 0 10px; 
+        }
+        .carousel-nav button { 
+            background-color: rgba(255, 255, 255, 0.95); 
+            color: var(--text); 
+            border: none; 
+            padding: 0; 
+            cursor: pointer; 
+            border-radius: 50%; 
+            font-size: 2rem; 
+            transition: all 0.3s ease; 
+            pointer-events: all; 
+            position: relative;
+            width: 55px; 
+            height: 55px; 
+            display: flex;
+            align-items: center; 
+            justify-content: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); 
+            opacity: 1; 
+            line-height: 1; 
+        }
+        .carousel-nav button:hover { 
+            background-color: #fff; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); 
+            transform: translateY(-2px) scale(1.08); 
+        }
+        .carousel-nav .prev { margin-left: 0; } 
+        .carousel-nav .next { margin-right: 0; } 
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; } h2 { font-size: 1.4rem; } .container { padding: 20px 16px 24px; }
+            
+            .carousel-nav {
+                top: 35%; 
+                padding: 0 5px; 
+            }
+            .carousel-nav button { 
+                font-size: 1.8rem; 
+                width: 45px; 
+                height: 45px; 
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+            } 
+            .carousel-nav .prev { margin-left: 0; }
+            .carousel-nav .next { margin-right: 0; }
+            .carousel-item { padding: 0; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="container">
+        <h1>Öğretmenlerden öğrencilerine "Atatürk'le fotoğraf" sürprizi</h1>
+
+        <p>Sosyal medyada, özellikle <strong>Cumhuriyetimizin 102. kuruluş yıldönümüne</strong> yaklaştığımız şu günlerde, içinizi ısıtacak yeni bir akımla karşılaşmış olabilirsiniz. Başrolde, ülkemizin dört bir yanından <strong>yaratıcı öğretmenlerimiz</strong> ve son günlerin trendi Google'ın yapay zekâsı <strong><a href="https://gemini.google.com/" target="_blank" class="text-link">Gemini</a> ile fotoğraf oluşturma akımı</strong> var.</p>
+        
+        <p>Kısa sürede sosyal medyada yayılarak tatlı bir akıma dönüşen videolarda, yapay zekânın gücünden yararlanan öğretmenler öğrencilerinin fotoğraflarını <strong>Mustafa Kemal Atatürk ile aynı karede</strong> birleştiriyor. Bu sürprizi gören çocukların yüzlerine yansıyan şaşkınlık ve sevinç ise <strong>her görenin içini ısıtıyor</strong> elbette.</p>
+
+        <div id="carousel-1-wrapper"> <div class="carousel-container">
+                <div class="carousel-inner">
+                    
+                    <div class="carousel-item">
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DQHIg2jjC2u/?igsh=MWZpd2tuY3NoMjN6aQ==" data-instgrm-version="14" style=" max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"></blockquote>
+                        <p class="prompt-text">“Öğrencilerime Cumhuriyet Bayramı hediyem ❤️” notuyla paylaştığı videoda, <a href="https://www.instagram.com/ikartoglu/" target="_blank" class="insta-user">@ikartoglu</a> öğrencilerine Atatürk’le yan yana oldukları fotoğraflarını armağan ediyor.</p>
+                    </div>
+                    
+                    <div class="carousel-item">
+                        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DQE-0N-DJQd/?igsh=OGM5N3lncTA5MWRy" data-instgrm-version="14" style=" max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"></blockquote>
+                        <p class="prompt-text"><a href="https://www.instagram.com/ozgurogretmenn/" target="_blank" class="insta-user">@ozgurogretmenn</a> bu akım videolarının nasıl yapıldığını anlatıyor.</p>
+                    </div>
+
+                </div>
+                <div class="carousel-nav">
+                    <button class="prev" aria-label="Önceki">&#10094;</button>
+                    <button class="next" aria-label="Sonraki">&#10095;</button>
+                </div>
+            </div>
+        </div>
+        <p>Çocukların kurucularıyla aynı fotoğrafta bir “anı”ya sahip olması fikri doğal olarak büyük beğeni topladı. Paylaşılan işler oldukça güzel yorumlar aldı ve hepimizde şaşkınlıkla karışık bir sevinç, içten bir özlem ve derin bir gurur uyandırdı.</p>
+        
+        <p>Peki, neden böylesine basit bir fikir hepimizin bu kadar hoşuna gitti?</p>
+        <p>Çünkü Cumhuriyet, geçmişte kalmış bir tarih değil; <strong>her kuşağın kendi diliyle</strong> yeniden anlam verdiği bir değer.</p>
+        <p>Bugün ise o dil, <strong>teknolojinin dili</strong>. Öğretmenlerimizin yaptığı da tam olarak bu.</p>
+
+        <div class="carousel-container"> <div class="carousel-item">
+                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DQFGsSHDFC7/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==" data-instgrm-version="14" style=" max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"></blockquote>
+                <p class="prompt-text">Atatürk’le hatıra fotoğrafını nasıl yaptığını ve hangi promptu kullandığını anlatan <a href="https://www.instagram.com/ebruliogretmeen/" target="_blank" class="insta-user">@ebruliogretmeen</a></p>
+            </div>
+        </div>
+        <p>Atatürk'le aynı karede olmanın mutluluğunu yaşayan her çocuk, Cumhuriyet'in bunca yıldan sonra bile ne kadar canlı, ne kadar “bugüne ait” bir fikir olduğunun en güzel kanıtı. <strong>Geçmişe değil, tam da bugüne bakan muazzam bir hediye.</strong></p>
+        <p>Cumhuriyetimizin 102. kuruluş yıldönümüne yaklaşırken, öğrencilerin ışıldayan gözlerinde bu eşsiz armağanın hiç eskimediğini bir kez daha görüyoruz. Bu duyguyu bize yeniden hatırlatan tüm öğretmenlerimize, 
+            <strong>kalpten bir teşekkür borçluyuz</strong>.</p>
+        <p><strong>Tüm öğretmen ve öğrencilerimizin yaklaşan Cumhuriyet Bayramı kutlu olsun!</strong></p>
+
+    </div>
+
+<script>
+    // Progress Bar Script
+    const progressBar = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        progressBar.style.width = `${scrollPercent}%`;
+    });
+
+    // === DÜZELTİLMİŞ CAROUSEL SCRIPT ===
+    // Tüm carousel mantığını DOM yüklendikten sonra çalıştır
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Sadece #carousel-1-wrapper içindeki carousel'i hedef al
+        const carouselWrapper = document.getElementById('carousel-1-wrapper');
+        
+        // Eğer ilk carousel (carouselWrapper) sayfada varsa, onun scriptlerini çalıştır
+        if (carouselWrapper) {
+            
+            // --- 1. Değişkenleri Tanımla ---
+            const carouselInner = carouselWrapper.querySelector('.carousel-inner');
+            const prevButton = carouselWrapper.querySelector('.carousel-nav .prev');
+            const nextButton = carouselWrapper.querySelector('.carousel-nav .next');
+            const carouselContainer = carouselWrapper.querySelector('.carousel-container');
+            const carouselItems = carouselWrapper.querySelectorAll('.carousel-item');
+            let currentIndex = 0;
+
+            // Eğer hiç carousel öğesi yoksa, script'in devam etmesine gerek yok
+            if (carouselItems.length === 0) return;
+
+            // --- 2. Yardımcı Fonksiyonları Tanımla ---
+
+            // Videoyu durduran fonksiyon
+            function pauseSlide(index) {
+                if (!carouselItems[index]) return; // Slayt yoksa çık
+                const item = carouselItems[index];
+                const iframe = item.querySelector('iframe.instagram-media-rendered');
+                if (iframe && iframe.src) {
+                    iframe.src = iframe.src;
+                }
+            }
+
+            // Carousel yüksekliğini o anki aktif slayta göre ayarlar
+            function adjustCarouselHeight() {
+                if (carouselItems[currentIndex]) {
+                    const itemHeight = carouselItems[currentIndex].offsetHeight;
+                    if (itemHeight > 0) {
+                        carouselContainer.style.height = `${itemHeight}px`;
+                    }
+                }
+            }
+
+            // Carousel'i günceller, videoları yönetir
+            function updateCarousel(previousIndex) {
+                if (previousIndex !== undefined && previousIndex !== currentIndex) {
+                    pauseSlide(previousIndex);
+                }
+                if (carouselItems.length > 0) {
+                    carouselInner.style.transform = `translateX(${-currentIndex * 100}%)`;
+                }
+                
+                // Instagram script'ini çağır
+                if (window.instgrm) {
+                    setTimeout(() => {
+                        window.instgrm.Embeds.process();
+                    }, 50); 
+                }
+            }
+
+            // --- 3. Buton Eventlerini Ekle ---
+            prevButton.addEventListener('click', () => {
+                const prevIndex = currentIndex; 
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : carouselItems.length - 1;
+                updateCarousel(prevIndex); 
+            });
+
+            nextButton.addEventListener('click', () => {
+                const prevIndex = currentIndex; 
+                currentIndex = (currentIndex < carouselItems.length - 1) ? currentIndex + 1 : 0;
+                updateCarousel(prevIndex); 
+            });
+            
+            // --- 4. Swipe Fonksiyonları ve Eventlerini Ekle ---
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let isSwiping = false;
+            const swipeThreshold = 50; 
+
+            function handleTouchStart(e) {
+                touchStartX = e.touches[0].clientX;
+                isSwiping = true;
+                const iframes = carouselInner.querySelectorAll('iframe.instagram-media-rendered');
+                iframes.forEach(iframe => {
+                    iframe.style.pointerEvents = 'none';
+                });
+            }
+
+            function handleTouchMove(e) {
+                if (!isSwiping) return; 
+                touchEndX = e.touches[0].clientX;
+                const diff = touchStartX - touchEndX;
+                if (Math.abs(diff) > 10) { 
+                    e.preventDefault(); 
+                }
+            }
+
+            function handleTouchEnd() {
+                if (!isSwiping) return;
+                isSwiping = false;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        nextButton.click();
+                    } else {
+                        prevButton.click();
+                    }
+                }
+                const iframes = carouselInner.querySelectorAll('iframe.instagram-media-rendered');
+                iframes.forEach(iframe => {
+                    iframe.style.pointerEvents = 'auto';
+                });
+            }
+            
+            carouselInner.addEventListener('touchstart', handleTouchStart, false);
+            carouselInner.addEventListener('touchmove', handleTouchMove, false);
+            carouselInner.addEventListener('touchend', handleTouchEnd, false);
+
+            // --- 5. Yükseklik Ayarı Eventlerini Ekle ---
+            window.addEventListener('instgm:media:rendered', adjustCarouselHeight);
+            window.addEventListener('resize', adjustCarouselHeight);
+
+        } // if (carouselWrapper) sonu
+
+        // --- 6. Instagram Embed'lerini Yükle (Genel) ---
+        // Bu, hem carousel'i hem de statik olan videoyu yükler.
+        if (window.instgrm) {
+            window.instgrm.Embeds.process();
+        } else {
+            // Script yüklenmezse diye bir yedek gecikme
+            setTimeout(() => {
+                if (window.instgrm) {
+                    window.instgrm.Embeds.process();
+                }
+            }, 1500);
+        }
+    });
+
+</script>
+<script async src="//www.instagram.com/embed.js"></script>
+</body>
+</html>
